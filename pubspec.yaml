@@ -1,0 +1,43 @@
+name: university_map
+description: Meisei University 3D Campus Map & Timetable
+version: 1.0.0+1
+publish_to: none
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.13.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  # State management
+  flutter_riverpod: ^2.4.9
+  riverpod_annotation: ^2.3.3
+  # Navigation
+  go_router: ^13.2.0
+  # Firebase
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.15.5
+  google_sign_in: ^6.2.1
+  # WebView
+  webview_flutter: ^4.7.0
+  # Local storage
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  # Utilities
+  intl: ^0.19.0
+  path_provider: ^2.1.2
+  connectivity_plus: ^5.0.2
+  uuid: ^4.3.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  riverpod_generator: ^2.3.9
+  build_runner: ^2.4.8
+  hive_generator: ^2.0.1
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/buildings.json
+    - assets/data/rooms.json
+    - assets/html/campus_map.html

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "A",
+    "name": "A館",
+    "nameEn": "Building A",
+    "lat": 35.6706,
+    "lng": 139.4257,
+    "plateauBuildingId": "13201-bldg-1001",
+    "description": "講義棟（主に文系学部）"
+  },
+  {
+    "id": "B",
+    "name": "B館",
+    "nameEn": "Building B",
+    "lat": 35.6709,
+    "lng": 139.4261,
+    "plateauBuildingId": "13201-bldg-1002",
+    "description": "講義棟（理工系）"
+  },
+  {
+    "id": "C",
+    "name": "C館",
+    "nameEn": "Building C",
+    "lat": 35.6703,
+    "lng": 139.4265,
+    "plateauBuildingId": "13201-bldg-1003",
+    "description": "実験・演習棟"
+  },
+  {
+    "id": "D",
+    "name": "D館",
+    "nameEn": "Building D",
+    "lat": 35.6712,
+    "lng": 139.4253,
+    "plateauBuildingId": "13201-bldg-1004",
+    "description": "図書館・情報センター"
+  },
+  {
+    "id": "E",
+    "name": "E館",
+    "nameEn": "Building E",
+    "lat": 35.6700,
+    "lng": 139.4258,
+    "plateauBuildingId": "13201-bldg-1005",
+    "description": "体育館・スポーツ施設"
+  },
+  {
+    "id": "F",
+    "name": "F館",
+    "nameEn": "Building F",
+    "lat": 35.6715,
+    "lng": 139.4270,
+    "plateauBuildingId": "13201-bldg-1006",
+    "description": "大学院・研究棟"
+  }
+]
