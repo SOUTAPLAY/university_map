@@ -14,9 +14,15 @@ class LocalCacheService {
   // Courses
   List<Course> getCachedCourses() {
     final box = Hive.box(_coursesBox);
-    return box.values
-        .map((v) => Course.fromJson(jsonDecode(v as String)))
-        .toList();
+    final result = <Course>[];
+    for (final v in box.values) {
+      try {
+        result.add(Course.fromJson(jsonDecode(v as String)));
+      } catch (_) {
+        // Skip corrupted cache entries
+      }
+    }
+    return result;
   }
 
   Future<void> cacheCourses(List<Course> courses) async {

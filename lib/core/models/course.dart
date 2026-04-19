@@ -4,7 +4,7 @@ class Course {
   final String id;
   final String name;
   final String instructor;
-  final int dayOfWeek; // 1=Mon, 2=Tue, ... 6=Sat
+  final int dayOfWeek; // 1=Mon, 2=Tue, ..., 6=Sat (Sunday not scheduled)
   final int period;
   final String roomId;
   final String buildingId;

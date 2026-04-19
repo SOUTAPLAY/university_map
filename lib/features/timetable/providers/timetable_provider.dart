@@ -69,7 +69,9 @@ final selectedCourseProvider = StateProvider<Course?>((ref) => null);
 final todayCourseProvider = Provider<List<Course>>((ref) {
   final courses = ref.watch(coursesProvider).value ?? [];
   final now = DateTime.now();
-  final dayOfWeek = now.weekday; // 1=Mon...6=Sat
+  // DateTime.weekday: 1=Mon, 2=Tue, ..., 6=Sat, 7=Sun
+  // The app uses 1-6 (Mon-Sat); Sunday (7) is not scheduled
+  final dayOfWeek = now.weekday;
   return courses
       .where((c) => c.dayOfWeek == dayOfWeek)
       .toList()
