@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>明星大学キャンパスマップ</title>
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.115/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+<style>
+  html, body, #cesiumContainer {
+    width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden;
+    background: #1a1a2e;
+  }
+  #loadingOverlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(26,26,46,0.9); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; color: white; z-index: 100;
+    font-family: sans-serif;
+  }
+  #loadingOverlay.hidden { display: none; }
+  .spinner {
+    width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.2);
+    border-top-color: #4fc3f7; border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <p>3Dキャンパスマップを読み込み中...</p>
+</div>
+<div id="cesiumContainer"></div>
+<script>
+// Cesium Ion token placeholder - replace with actual token
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder';
+
+const viewer = new Cesium.Viewer('cesiumContainer', {
+  terrainProvider: Cesium.createWorldTerrain(),
+  timeline: false,
+  animation: false,
+  homeButton: false,
+  sceneModePicker: false,
+  baseLayerPicker: false,
+  navigationHelpButton: false,
+  fullscreenButton: false,
+  geocoder: false,
+  infoBox: false,
+  selectionIndicator: false,
+  shadows: true,
+  shouldAnimate: false,
+});
+
+viewer.scene.globe.enableLighting = true;
+viewer.scene.fog.enabled = false;
+
+// Meisei University coordinates (Hino Campus)
+const CAMPUS_CENTER = { lat: 35.6706, lng: 139.4258, height: 200 };
+
+// Load PLATEAU 3D Tiles for Tokyo (Hino City area)
+// Using Project PLATEAU provided 3D Tiles
+const plateauTileset = viewer.scene.primitives.add(
+  new Cesium.Cesium3DTileset({
+    url: 'https://plateau.geospatial.jp/main/data/3d-tiles/bldg/13201_hino/low_resolution/tileset.json',
+    maximumScreenSpaceError: 8,
+    maximumMemoryUsage: 512,
+  })
+);
+
+plateauTileset.readyPromise.then(() => {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  flyToHome();
+  if (window.FlutterMapReady) {
+    FlutterMapReady.postMessage('ready');
+  }
+}).catch(err => {
+  console.warn('PLATEAU tiles not available, using fallback:', err);
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  flyToHome();
+  if (window.FlutterMapReady) {
+    FlutterMapReady.postMessage('ready');
+  }
+});
+
+function flyToHome() {
+  viewer.camera.flyTo({
+    destination: Cesium.Cartesian3.fromDegrees(
+      CAMPUS_CENTER.lng, CAMPUS_CENTER.lat, CAMPUS_CENTER.height
+    ),
+    orientation: {
+      heading: Cesium.Math.toRadians(0),
+      pitch: Cesium.Math.toRadians(-45),
+      roll: 0,
+    },
+    duration: 2,
+  });
+}
+
+// Building markers
+const buildingEntities = {};
+
+function addBuildingMarkers(buildings) {
+  buildings.forEach(b => {
+    const entity = viewer.entities.add({
+      id: 'building_' + b.id,
+      position: Cesium.Cartesian3.fromDegrees(b.lng, b.lat, 5),
+      billboard: {
+        image: createMarkerCanvas(b.id, '#1976D2'),
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      },
+      label: {
+        text: b.name,
+        font: '14px sans-serif',
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(0, -48),
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      }
+    });
+    buildingEntities[b.id] = entity;
+  });
+}
+
+function createMarkerCanvas(label, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 40; canvas.height = 40;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(20, 20, 18, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, 20, 20);
+  return canvas.toDataURL();
+}
+
+function highlightBuilding(buildingId, highlight) {
+  const entity = buildingEntities[buildingId];
+  if (!entity) return;
+  const color = highlight ? '#FF6F00' : '#1976D2';
+  entity.billboard.image = createMarkerCanvas(buildingId, color);
+  if (highlight) {
+    const b = entity.position.getValue(Cesium.JulianDate.now());
+    viewer.camera.flyTo({
+      destination: Cesium.Cartesian3.fromDegrees(
+        Cesium.Cartographic.fromCartesian(b).longitude * 180 / Math.PI,
+        Cesium.Cartographic.fromCartesian(b).latitude * 180 / Math.PI,
+        150
+      ),
+      orientation: {
+        heading: Cesium.Math.toRadians(0),
+        pitch: Cesium.Math.toRadians(-50),
+        roll: 0,
+      },
+      duration: 1.5,
+    });
+  }
+}
+
+function resetHighlights() {
+  Object.keys(buildingEntities).forEach(id => {
+    buildingEntities[id].billboard.image = createMarkerCanvas(id, '#1976D2');
+  });
+}
+
+// Message handler from Flutter
+window.handleFlutterMessage = function(json) {
+  try {
+    const msg = JSON.parse(json);
+    switch(msg.type) {
+      case 'init':
+        addBuildingMarkers(msg.buildings);
+        break;
+      case 'highlight':
+        resetHighlights();
+        if (msg.buildingId) highlightBuilding(msg.buildingId, true);
+        break;
+      case 'reset':
+        resetHighlights();
+        flyToHome();
+        break;
+      case 'flyTo':
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(msg.lng, msg.lat, msg.height || 200),
+          orientation: { heading: 0, pitch: Cesium.Math.toRadians(-45), roll: 0 },
+          duration: 1.5,
+        });
+        break;
+    }
+  } catch(e) { console.error('handleFlutterMessage error:', e); }
+};
+
+// Click handler
+viewer.screenSpaceEventHandler.setInputAction(function(click) {
+  const picked = viewer.scene.pick(click.position);
+  if (Cesium.defined(picked) && picked.id) {
+    const id = picked.id.id || '';
+    if (id.startsWith('building_')) {
+      const buildingId = id.replace('building_', '');
+      if (window.FlutterBuildingTapped) {
+        FlutterBuildingTapped.postMessage(buildingId);
+      }
+    }
+  }
+}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+</script>
+</body>
+</html>

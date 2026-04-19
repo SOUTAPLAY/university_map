@@ -1,0 +1,16 @@
+[
+  {"id": "A101", "buildingId": "A", "name": "A101", "floor": 1, "capacity": 60, "type": "lecture"},
+  {"id": "A102", "buildingId": "A", "name": "A102", "floor": 1, "capacity": 60, "type": "lecture"},
+  {"id": "A201", "buildingId": "A", "name": "A201", "floor": 2, "capacity": 120, "type": "large_lecture"},
+  {"id": "A202", "buildingId": "A", "name": "A202", "floor": 2, "capacity": 120, "type": "large_lecture"},
+  {"id": "A301", "buildingId": "A", "name": "A301", "floor": 3, "capacity": 40, "type": "seminar"},
+  {"id": "B101", "buildingId": "B", "name": "B101", "floor": 1, "capacity": 60, "type": "lecture"},
+  {"id": "B102", "buildingId": "B", "name": "B102", "floor": 1, "capacity": 60, "type": "lecture"},
+  {"id": "B201", "buildingId": "B", "name": "B201", "floor": 2, "capacity": 40, "type": "lab"},
+  {"id": "B301", "buildingId": "B", "name": "B301", "floor": 3, "capacity": 40, "type": "lab"},
+  {"id": "C101", "buildingId": "C", "name": "C101", "floor": 1, "capacity": 30, "type": "seminar"},
+  {"id": "C201", "buildingId": "C", "name": "C201", "floor": 2, "capacity": 80, "type": "lecture"},
+  {"id": "D101", "buildingId": "D", "name": "図書館閲覧室", "floor": 1, "capacity": 200, "type": "library"},
+  {"id": "F101", "buildingId": "F", "name": "F101", "floor": 1, "capacity": 30, "type": "seminar"},
+  {"id": "F201", "buildingId": "F", "name": "F201", "floor": 2, "capacity": 30, "type": "seminar"}
+]
